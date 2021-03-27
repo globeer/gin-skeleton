@@ -9,7 +9,7 @@ import (
 )
 
 // ConfigFile is the default config file
-var ConfigFile = "./config.yml"
+var ConfigFile = "./app/config/config.yml"
 
 // GlobalConfig is the global config
 type GlobalConfig struct {

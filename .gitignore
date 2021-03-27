@@ -1,3 +1,5 @@
 storage/*
 log/*
 vendor/*
+
+app/log/*

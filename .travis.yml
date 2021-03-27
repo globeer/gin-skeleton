@@ -8,7 +8,7 @@ notifications:
   email: false
 
 install:
-  - export config=../config.yml
+  - export config=../app/config/config.yml
   - go mod download
 
 services:
