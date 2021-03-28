@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hyperjiang/gin-skeleton/config"
+	"github.com/globeer/gin-skeleton/config"
 	"github.com/hyperjiang/php"
 	"github.com/stretchr/testify/suite"
 )

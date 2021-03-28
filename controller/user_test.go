@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hyperjiang/gin-skeleton/config"
+	"github.com/globeer/gin-skeleton/config"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -22,7 +22,7 @@ type UserTestSuite struct {
 
 var (
 	name     = "hyper"
-	email    = "hyperjiang@gmail.com"
+	email    = "globeer@gmail.com"
 	password = "123456"
 )
 

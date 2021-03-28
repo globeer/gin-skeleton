@@ -1,5 +1,5 @@
 server:
-  version: "0.1.0"
+  version: "0.1.1"
   addr: :8080
   mode: debug
   static_dir: ./public

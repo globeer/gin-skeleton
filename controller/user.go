@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hyperjiang/gin-skeleton/model"
+	"github.com/globeer/gin-skeleton/model"
 )
 
 // UserController is the user controller
