@@ -64,8 +64,10 @@ func Load(file string) (GlobalConfig, error) {
 
 // loads configs
 func init() {
+	log.Printf("config.init :: config is %v\n", os.Getenv("config"))
 	if os.Getenv("config") != "" {
 		ConfigFile = os.Getenv("config")
 	}
+	log.Printf("config.init :: ConfigFile is %v\n", ConfigFile)
 	Load(ConfigFile)
 }

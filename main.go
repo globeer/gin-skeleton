@@ -46,6 +46,26 @@ import (
 // 	return err
 // }
 
+func FileExists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
+func CreateFile(name string) error {
+	fo, err := os.Create(name)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		fo.Close()
+	}()
+	return nil
+}
+
 func main() {
 
 	// we have to ensure the directory we want to write to
@@ -96,23 +116,45 @@ func main() {
 	// t := time.Now()
 	// startTime := t.Format("2006-01-02 15:04:05")
 
-	logDir := "log"
-	logFile, err := os.OpenFile(logDir+"/request.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
-	if err != nil {
-		log.Printf("os.OpenFile error is %v\n", err.Error())
-		logFile, _ = os.Create(logDir + "/request.log")
+	if !FileExists("log/request.log") {
+		CreateFile("log/request.log")
 	}
+	logFile, err := os.OpenFile("log/request.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
+	if err != nil {
+		log.Fatalf("os.OpenFile error is %v\n", err.Error())
+	}
+	// log.SetOutput(io.Writer(logFile))
 	gin.DefaultWriter = io.MultiWriter(logFile)
-	log.Printf("logFile is %v\n", logFile.Name())
 	defer logFile.Close()
-	errlogfile, err := os.OpenFile(logDir+"/error.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
-	if err != nil {
-		log.Printf("os.OpenFile error is %v\n", err.Error())
-		errlogfile, _ = os.Create(logDir + "/error.log")
+
+	if !FileExists("log/error.log") {
+		CreateFile("log/error.log")
 	}
-	gin.DefaultErrorWriter = io.MultiWriter(errlogfile)
-	log.Printf("errlogfile is %v\n", errlogfile.Name())
-	defer errlogfile.Close()
+	errLogFile, err := os.OpenFile("log/error.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
+	if err != nil {
+		log.Fatalf("os.OpenFile error is %v\n", err.Error())
+	}
+	// log.SetOutput(io.Writer(logFile))
+	gin.DefaultErrorWriter = io.MultiWriter(errLogFile)
+	defer errLogFile.Close()
+
+	// logDir := "log"
+	// logFile, err := os.OpenFile(logDir+"/request.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
+	// if err != nil {
+	// 	log.Printf("os.OpenFile error is %v\n", err.Error())
+	// 	logFile, _ = os.Create(logDir + "/request.log")
+	// }
+	// gin.DefaultWriter = io.MultiWriter(logFile)
+	// log.Printf("logFile is %v\n", logFile.Name())
+	// defer logFile.Close()
+	// errlogfile, err := os.OpenFile(logDir+"/error.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
+	// if err != nil {
+	// 	log.Printf("os.OpenFile error is %v\n", err.Error())
+	// 	errlogfile, _ = os.Create(logDir + "/error.log")
+	// }
+	// gin.DefaultErrorWriter = io.MultiWriter(errlogfile)
+	// log.Printf("errlogfile is %v\n", errlogfile.Name())
+	// defer errlogfile.Close()
 
 	// dailylog.initRotatedFileMust()
 
