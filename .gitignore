@@ -1,5 +1,4 @@
 storage/*
 log/*
 vendor/*
-
-app/log/*
+conf/*

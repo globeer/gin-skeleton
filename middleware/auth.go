@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
+	"bower.co.kr/c4bapi/models"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/globeer/gin-skeleton/model"
 )
 
 var authMiddleware *jwt.GinJWTMiddleware
@@ -14,8 +14,8 @@ var identityKey = "email"
 
 // Login struct
 type Login struct {
-	Email    string `form:"email" json:"email" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required,min=6,max=20"`
+	UserId string `form:"userId" json:"user_id" binding:"required"`
+	UserPw string `form:"userPw" json:"user_pw" binding:"required,min=6,max=20"`
 }
 
 // Auth middleware
@@ -33,19 +33,19 @@ func init() {
 		IdentityKey: identityKey,
 		SendCookie:  true,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*model.User); ok {
+			if v, ok := data.(*models.User1); ok {
 				return jwt.MapClaims{
-					identityKey: v.Email,
-					"name":      v.Name,
+					identityKey: v.UserId,
+					"userNm":    v.UserNm,
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &model.User{
-				Email: claims[identityKey].(string),
-				Name:  claims["name"].(string),
+			return &models.User1{
+				UserId: claims[identityKey].(string),
+				UserNm: claims["userNm"].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -53,16 +53,16 @@ func init() {
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			email := loginVals.Email
-			password := loginVals.Password
+			userId := loginVals.UserId
+			userPw := loginVals.UserPw
 
-			return model.LoginByEmailAndPassword(email, password)
+			return models.LoginByEmailAndPassword(userId, userPw)
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*model.User); ok && v.Name == "admin" {
+			if v, ok := data.(*models.User1); ok && v.UserId == "admin" {
 				return true
 			}
-
+			// log.Default(c.Params.ByName())
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {

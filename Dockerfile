@@ -1,4 +1,4 @@
-# docker build --rm -t docker.bower.co.kr/gogin:0.1.0 . && docker rmi $(docker images -f dangling=true -q)
+# docker build --rm -t docker.bower.co.kr/gogin:0.2.0 . && sh docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
 FROM golang:1.16.2-alpine3.13 as builder
 
 ARG USER_ID=1000
@@ -37,9 +37,9 @@ WORKDIR $APP_HOME
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 COPY --chown=bower:bower --from=builder /tmp/alpine-golang-image/main $APP_HOME
-COPY --chown=bower:bower app/ app/
-COPY --chown=bower:bower public/ public/
-COPY --chown=bower:bower view/ view/
+# COPY --chown=bower:bower app/ app/
+# COPY --chown=bower:bower public/ public/
+# COPY --chown=bower:bower view/ view/
 
 # for busybox
 # RUN rm -f $APP_HOME/app/config/config.yml
@@ -47,5 +47,5 @@ COPY --chown=bower:bower view/ view/
 USER $APP_USER
 # host 와 통신 port
 EXPOSE $APP_PORT
-VOLUME ["$APP_HOME/app/log", "$APP_HOME/app/config"]
+VOLUME ["$APP_HOME/log", "$APP_HOME/conf", "$APP_HOME/public", "$APP_HOME/view"]
 CMD ["./main"]

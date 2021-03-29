@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 
+	"bower.co.kr/c4bapi/config"
+	"bower.co.kr/c4bapi/routers"
 	"github.com/gin-gonic/gin"
-	"github.com/globeer/gin-skeleton/config"
-	"github.com/globeer/gin-skeleton/router"
 	// "github.com/kjk/dailyrotate"
 )
 
@@ -47,14 +48,14 @@ import (
 
 func main() {
 
-	logDir := "app/log"
+	logDir := "log"
 
 	// we have to ensure the directory we want to write to
 	// already exists
-	// err := os.MkdirAll(logDir, 0755)
-	// if err != nil {
-	// 	log.Fatalf("os.MkdirAll()(")
-	// }
+	err := os.MkdirAll(logDir, 0755)
+	if err != nil {
+		log.Printf("os.MkdirAll error is %v\n", err.Error())
+	}
 	// // only for the purpose of the demo, cleanup the directory
 	// defer os.RemoveAll(logDir)
 
@@ -99,26 +100,28 @@ func main() {
 
 	logFile, err := os.OpenFile(logDir+"/request.log", os.O_APPEND, 0666)
 	if err != nil {
+		log.Printf("os.OpenFile error is %v\n", err.Error())
 		logFile, _ = os.Create(logDir + "/request.log")
 	}
 	gin.DefaultWriter = io.MultiWriter(logFile)
 	errlogfile, err := os.OpenFile(logDir+"/error.log", os.O_APPEND, 0666)
 	if err != nil {
+		log.Printf("os.OpenFile error is %v\n", err.Error())
 		errlogfile, _ = os.Create(logDir + "/error.log")
 	}
 	gin.DefaultErrorWriter = io.MultiWriter(errlogfile)
 
 	// dailylog.initRotatedFileMust()
 
-	app := gin.Default()
-
-	app.Static("/images", filepath.Join(config.Server.StaticDir, "images"))
-	app.StaticFile("/favicon.ico", filepath.Join(config.Server.StaticDir, "images/favicon.ico"))
-	app.LoadHTMLGlob(config.Server.ViewDir + "/*")
-	app.MaxMultipartMemory = config.Server.MaxMultipartMemory << 20
-
-	router.Route(app)
+	router := gin.Default()
+	router.Static("/images", filepath.Join(config.Server.StaticDir, "images"))
+	router.Static("/js", filepath.Join(config.Server.StaticDir, "js"))
+	router.Static("/css", filepath.Join(config.Server.StaticDir, "css"))
+	router.StaticFile("/favicon.ico", filepath.Join(config.Server.StaticDir, "favicon.ico"))
+	router.LoadHTMLGlob(config.Server.ViewDir + "/*")
+	router.MaxMultipartMemory = config.Server.MaxMultipartMemory << 20
+	routers.Route(router)
 
 	// Listen and Serve
-	app.Run(*addr)
+	router.Run(*addr)
 }
