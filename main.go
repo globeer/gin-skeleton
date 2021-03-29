@@ -48,14 +48,12 @@ import (
 
 func main() {
 
-	logDir := "log"
-
 	// we have to ensure the directory we want to write to
 	// already exists
-	err := os.MkdirAll(logDir, 0755)
-	if err != nil {
-		log.Printf("os.MkdirAll error is %v\n", err.Error())
-	}
+	// err := os.MkdirAll(logDir, 0755)
+	// if err != nil {
+	// 	log.Printf("os.MkdirAll error is %v\n", err.Error())
+	// }
 	// // only for the purpose of the demo, cleanup the directory
 	// defer os.RemoveAll(logDir)
 
@@ -98,18 +96,23 @@ func main() {
 	// t := time.Now()
 	// startTime := t.Format("2006-01-02 15:04:05")
 
-	logFile, err := os.OpenFile(logDir+"/request.log", os.O_APPEND, 0666)
+	logDir := "log"
+	logFile, err := os.OpenFile(logDir+"/request.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
 	if err != nil {
 		log.Printf("os.OpenFile error is %v\n", err.Error())
 		logFile, _ = os.Create(logDir + "/request.log")
 	}
 	gin.DefaultWriter = io.MultiWriter(logFile)
-	errlogfile, err := os.OpenFile(logDir+"/error.log", os.O_APPEND, 0666)
+	log.Printf("logFile is %v\n", logFile.Name())
+	defer logFile.Close()
+	errlogfile, err := os.OpenFile(logDir+"/error.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0664)
 	if err != nil {
 		log.Printf("os.OpenFile error is %v\n", err.Error())
 		errlogfile, _ = os.Create(logDir + "/error.log")
 	}
 	gin.DefaultErrorWriter = io.MultiWriter(errlogfile)
+	log.Printf("errlogfile is %v\n", errlogfile.Name())
+	defer errlogfile.Close()
 
 	// dailylog.initRotatedFileMust()
 
